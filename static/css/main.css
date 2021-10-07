@@ -3,6 +3,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Bitter:ital@1&display=swap");
 body {
   margin: 0;
+  width: 100%;
+  height: 109vh;
   color: white;
   background: -webkit-gradient(linear, left bottom, left top, color-stop(50%, rgba(0, 0, 0, 0.5)), color-stop(50%, rgba(0, 0, 0, 0.5))), url("../images/sexy-battlefield-4.jpg");
   background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.5) 50%), url("../images/sexy-battlefield-4.jpg");
@@ -169,5 +171,101 @@ body .header .v {
   border-radius: 10em;
   background: -webkit-gradient(linear, left bottom, left top, color-stop(50%, rgba(0, 0, 0, 0.5)), color-stop(50%, rgba(0, 0, 0, 0.5)));
   background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.5) 50%);
+}
+
+.form {
+  position: absolute;
+  bottom: -600px;
+  width: 350px;
+  height: 480px;
+  left: 420px;
+  border-radius: 15px;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(50%, rgba(0, 0, 0, 0.5)), color-stop(50%, rgba(0, 0, 0, 0.5)));
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.5) 50%);
+}
+
+.form .link {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 17px;
+  padding-top: 20px;
+  text-align: center;
+}
+
+.form .link a {
+  text-decoration: none;
+  color: blue;
+  -webkit-transition: .4s ease;
+  transition: .4s ease;
+}
+
+.form .link a:hover {
+  color: #12852f;
+}
+
+.form input {
+  width: 240px;
+  height: 35px;
+  background: transparent;
+  border-right: none;
+  border-left: none;
+  color: white;
+  font-size: 15px;
+  margin-top: 30px;
+  font-family: sans-serif;
+}
+
+.form input ::-webkit-input-placeholder {
+  color: white;
+  font-family: arial;
+}
+
+.form input :-ms-input-placeholder {
+  color: white;
+  font-family: arial;
+}
+
+.form input ::-ms-input-placeholder {
+  color: white;
+  font-family: arial;
+}
+
+.form input ::placeholder {
+  color: white;
+  font-family: arial;
+}
+
+.form h2 {
+  color: #a72711;
+  width: 220px;
+  background-color: #083515;
+  border-radius: 10px;
+  margin: 2px;
+  padding: 8px;
+  font-size: 22px;
+}
+
+.btn {
+  width: 240px;
+  height: 40px;
+  background: #918983;
+  border: none;
+  margin-top: 30px;
+  font-size: 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: White;
+  -webkit-transition: 0.4s ease;
+  transition: 0.4s ease;
+}
+
+.btn:hover {
+  background: #021a02;
+  color: #2c973a;
+}
+
+.btn a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
 }
 /*# sourceMappingURL=main.css.map */

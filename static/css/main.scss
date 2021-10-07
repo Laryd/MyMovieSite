@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Akronim&display=swap'), url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap'), url('https://fonts.googleapis.com/css2?family=Bitter:ital@1&display=swap');
 body{
     margin:0;
+    width: 100%;
+    height: 109vh;
 
     color: white;
     background: linear-gradient(to top, rgba(0,0,0,0.5)50%, rgba(0,0,0,0.5)50%), url('../images/sexy-battlefield-4.jpg');
@@ -155,7 +157,75 @@ body{
    }
   
 }
+.form{
+  position: absolute;
+  bottom: -600px;
+  width: 350px;
+  height: 480px;
+  left: 420px;
+  border-radius: 15px;
+  background: linear-gradient(to top, rgba(0,0,0,0.5)50%, rgba(0,0,0,0.5)50%);
+  .link{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17px;
+    padding-top: 20px;
+    text-align: center;
+  a{
+      text-decoration: none;
+      color:blue;
+      transition: .4s ease;
+      &:hover{
+        color: rgb(18, 133, 47);
+      }
+    }
+  }
+  input{
+    width: 240px;
+    height: 35px;
+    background: transparent;
+    border-right: none;
+    border-left:none;
+    color: white;
+    font-size: 15px;
+    margin-top: 30px;
+    font-family: sans-serif;
+    ::placeholder{
+      color: white;
+      font-family: arial;
+    }
+}
+h2{
+  color: rgb(167, 39, 17);
+  width: 220px;
+  background-color: rgb(8, 53, 21);
+  border-radius: 10px;
+  margin: 2px;
+  padding: 8px;
+  font-size:22px;
+} 
+}
+.btn{
+  width: 240px;
+  height: 40px;
+  background:rgb(145, 137, 131);
+  border: none;
+  margin-top: 30px;
+  font-size: 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: White;
+  transition: 0.4s ease;
+  &:hover{
+    background:rgb(2, 26, 2);
+    color:rgb(44, 151, 58);
+  }
+  a{
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+  }
 
+}
 
   
   
