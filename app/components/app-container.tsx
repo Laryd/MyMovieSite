@@ -1,19 +1,5 @@
-import React from "react";
-import Header from "../layouts/header";
-import Footer from "../layouts/footer";
-import Body from "../layouts/body";
+import { CustomComponentProps } from '../interfaces'
 
-const AppContainer = () => {
-  return (
-    <>
-      {/* header */}
-      <Header />
-      {/* body */}
-      <Body />
-      {/* footer */}
-      <Footer />
-    </>
-  );
-};
-
-export default AppContainer;
+export default function AppContainer({ children }: CustomComponentProps) {
+  return <>{children}</>
+}

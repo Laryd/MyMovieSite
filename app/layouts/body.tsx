@@ -1,9 +1,5 @@
-import React from 'react'
+import { CustomComponentProps } from '../interfaces'
 
-const Body = () => {
-  return (
-    <div>Body</div>
-  )
+export default function Body({ children }: CustomComponentProps) {
+  return <div>{children}</div>
 }
-
-export default Body
