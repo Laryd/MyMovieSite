@@ -1,10 +1,11 @@
-import React from 'react'
+import { cn } from '@/lib/utils'
 import { CustomComponentProps } from '../interfaces'
-import { mergeClassName } from '../utils'
 
-const Container = (props: CustomComponentProps) => {
+const Container = ({ children, className }: CustomComponentProps) => {
   return (
-    <div className={mergeClassName("px-6 py-3 max-w-full mx-auto", )}>{props.children}</div>
+    <div className={cn('px-4 sm:px-6 lg:px-10 max-w-full mx-auto', className)}>
+      {children}
+    </div>
   )
 }
 
