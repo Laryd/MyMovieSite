@@ -181,3 +181,74 @@ export const getTVGenres = () =>
 // Search
 export const searchMulti = (query: string, page = 1) =>
   get<ListResult<SearchResult>>('/search/multi', { query, page })
+
+// Videos (trailers)
+export interface Video {
+  id: string
+  key: string
+  name: string
+  site: string
+  type: string
+  official: boolean
+}
+export const getMovieVideos = (id: number) =>
+  get<{ results: Video[] }>(`/movie/${id}/videos`).then(d =>
+    d.results.filter(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'))
+  )
+export const getTVVideos = (id: number) =>
+  get<{ results: Video[] }>(`/tv/${id}/videos`).then(d =>
+    d.results.filter(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'))
+  )
+
+// Watch providers
+export interface Provider {
+  logo_path: string
+  provider_id: number
+  provider_name: string
+  display_priority: number
+}
+export interface WatchProviderResult {
+  link: string
+  flatrate?: Provider[]
+  rent?: Provider[]
+  buy?: Provider[]
+}
+export const getMovieWatchProviders = (id: number) =>
+  get<{ results: Record<string, WatchProviderResult> }>(`/movie/${id}/watch/providers`).then(
+    d => d.results?.US ?? null
+  )
+export const getTVWatchProviders = (id: number) =>
+  get<{ results: Record<string, WatchProviderResult> }>(`/tv/${id}/watch/providers`).then(
+    d => d.results?.US ?? null
+  )
+
+// People
+export interface Person {
+  id: number
+  name: string
+  biography: string
+  birthday: string | null
+  deathday: string | null
+  place_of_birth: string | null
+  profile_path: string | null
+  known_for_department: string
+  popularity: number
+  homepage: string | null
+}
+export interface PersonMovieCredit extends Movie {
+  character: string
+  job?: string
+}
+export interface PersonCredits {
+  cast: PersonMovieCredit[]
+  crew: PersonMovieCredit[]
+}
+export const getPersonById = (id: number) => get<Person>(`/person/${id}`)
+export const getPersonMovieCredits = (id: number) =>
+  get<PersonCredits>(`/person/${id}/movie_credits`)
+export const getPersonTVCredits = (id: number) =>
+  get<{ cast: (TVShow & { character: string })[] }>(`/person/${id}/tv_credits`)
+
+// Popular people
+export const getPopularPeople = (page = 1) =>
+  get<ListResult<Person & { known_for: (Movie | TVShow)[] }>>('/person/popular', { page })
