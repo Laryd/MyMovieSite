@@ -1,15 +1,20 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Star, Calendar, Play, ChevronLeft, Tv2 } from 'lucide-react'
+import { Star, Calendar, ChevronLeft, Tv2, ExternalLink } from 'lucide-react'
 import {
   getTVById,
   getTVCredits,
   getSimilarTV,
+  getTVVideos,
+  getTVWatchProviders,
   backdrop,
   poster,
   profileImg,
 } from '../../lib/tmdb'
 import MovieCard from '../../components/MovieCard'
+import TrailerModal from '../../components/TrailerModal'
+import WatchlistButton from '../../components/WatchlistButton'
+import WatchProviders from '../../components/WatchProviders'
 
 interface Props {
   params: { id: string }
@@ -17,15 +22,20 @@ interface Props {
 
 export async function generateMetadata({ params }: Props) {
   const show = await getTVById(Number(params.id))
-  return { title: `${show.name} — Sprimio` }
+  return {
+    title: `${show.name} — Sprimio`,
+    description: show.overview,
+  }
 }
 
 export default async function TVDetailPage({ params }: Props) {
   const id = Number(params.id)
-  const [show, credits, similar] = await Promise.all([
+  const [show, credits, similar, videos, providers] = await Promise.all([
     getTVById(id),
     getTVCredits(id),
     getSimilarTV(id),
+    getTVVideos(id),
+    getTVWatchProviders(id),
   ])
 
   const creator = credits.crew.find(c => c.job === 'Creator' || c.department === 'Creator')
@@ -33,11 +43,21 @@ export default async function TVDetailPage({ params }: Props) {
   const backdropUrl = backdrop(show.backdrop_path)
   const posterUrl = poster(show.poster_path)
   const year = show.first_air_date ? new Date(show.first_air_date).getFullYear() : null
+  const trailer = videos.find(v => v.type === 'Trailer') ?? videos[0] ?? null
+
+  const watchlistItem = {
+    id: show.id,
+    type: 'tv' as const,
+    title: show.name,
+    poster_path: show.poster_path,
+    vote_average: show.vote_average,
+    year: year ? String(year) : '',
+  }
 
   return (
     <div className="min-h-screen pb-16">
       {/* Backdrop */}
-      <div className="relative h-[55vh] min-h-[380px]">
+      <div className="relative h-[58vh] min-h-[400px]">
         {backdropUrl && (
           <Image src={backdropUrl} alt={show.name} fill sizes="100vw" className="object-cover" priority />
         )}
@@ -53,7 +73,7 @@ export default async function TVDetailPage({ params }: Props) {
       </div>
 
       {/* Content */}
-      <div className="px-4 sm:px-6 lg:px-10 -mt-40 relative">
+      <div className="px-4 sm:px-6 lg:px-10 -mt-44 relative">
         <div className="flex flex-col sm:flex-row gap-8">
           {/* Poster */}
           {posterUrl && (
@@ -72,7 +92,6 @@ export default async function TVDetailPage({ params }: Props) {
 
           {/* Info */}
           <div className="flex-1 pt-2">
-            {/* Genres */}
             <div className="flex flex-wrap gap-2 mb-3">
               {show.genres?.map(g => (
                 <span
@@ -91,7 +110,6 @@ export default async function TVDetailPage({ params }: Props) {
               <p className="text-zinc-500 italic text-sm sm:text-base mb-4">"{show.tagline}"</p>
             )}
 
-            {/* Meta */}
             <div className="flex flex-wrap items-center gap-4 mb-5 text-sm">
               {show.vote_average > 0 && (
                 <div className="flex items-center gap-1.5">
@@ -121,15 +139,22 @@ export default async function TVDetailPage({ params }: Props) {
               {show.overview}
             </p>
 
-            {/* Action */}
             <div className="flex items-center gap-3 flex-wrap mb-6">
-              <button className="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white px-6 py-2.5 rounded-full font-semibold transition-colors text-sm shadow-lg shadow-violet-900/30">
-                <Play className="w-4 h-4 fill-white" />
-                Watch Trailer
-              </button>
+              <TrailerModal videoKey={trailer?.key ?? null} title={show.name} />
+              <WatchlistButton item={watchlistItem} />
+              {show.homepage && (
+                <a
+                  href={show.homepage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white px-4 py-2.5 rounded-full font-medium transition-colors text-sm border border-zinc-700/60"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Official Site
+                </a>
+              )}
             </div>
 
-            {/* Credits */}
             <div className="space-y-2 text-sm">
               {creator && (
                 <p className="text-zinc-500">
@@ -142,6 +167,8 @@ export default async function TVDetailPage({ params }: Props) {
                 </p>
               )}
             </div>
+
+            <WatchProviders providers={providers} />
           </div>
         </div>
 
@@ -153,7 +180,7 @@ export default async function TVDetailPage({ params }: Props) {
               {cast.map(member => {
                 const imgUrl = profileImg(member.profile_path)
                 return (
-                  <div key={member.id} className="flex-shrink-0 w-20 text-center group">
+                  <Link key={member.id} href={`/person/${member.id}`} className="flex-shrink-0 w-20 text-center group">
                     <div className="relative w-16 h-16 mx-auto rounded-full overflow-hidden bg-zinc-800 mb-2 ring-2 ring-zinc-700/50 group-hover:ring-violet-600/50 transition-all">
                       {imgUrl ? (
                         <Image src={imgUrl} alt={member.name} fill sizes="64px" className="object-cover" />
@@ -161,9 +188,9 @@ export default async function TVDetailPage({ params }: Props) {
                         <div className="w-full h-full flex items-center justify-center text-xl text-zinc-500">👤</div>
                       )}
                     </div>
-                    <p className="text-xs font-semibold text-zinc-300 line-clamp-1">{member.name}</p>
+                    <p className="text-xs font-semibold text-zinc-300 line-clamp-1 group-hover:text-violet-300 transition-colors">{member.name}</p>
                     <p className="text-xs text-zinc-600 line-clamp-1 mt-0.5">{member.character}</p>
-                  </div>
+                  </Link>
                 )
               })}
             </div>
@@ -175,9 +202,7 @@ export default async function TVDetailPage({ params }: Props) {
           <div className="mt-14">
             <h2 className="text-xl font-bold text-white mb-5">More Like This</h2>
             <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-              {similar.map(s => (
-                <MovieCard key={s.id} item={s} type="tv" />
-              ))}
+              {similar.map(s => <MovieCard key={s.id} item={s} type="tv" />)}
             </div>
           </div>
         )}
