@@ -182,6 +182,68 @@ export const getTVGenres = () =>
 export const searchMulti = (query: string, page = 1) =>
   get<ListResult<SearchResult>>('/search/multi', { query, page })
 
+// Collections / franchises
+export interface MovieCollection {
+  id: number
+  name: string
+  overview: string
+  poster_path: string | null
+  backdrop_path: string | null
+  parts: Movie[]
+}
+export const getCollection = (id: number) => get<MovieCollection>(`/collection/${id}`)
+
+// Trending with type + window
+export const getTrendingByType = (
+  type: 'movie' | 'tv' | 'all',
+  window: 'day' | 'week' = 'week'
+) => get<ListResult<SearchResult>>(`/trending/${type}/${window}`)
+
+// Discover with advanced filters
+export interface DiscoverParams {
+  page?: number
+  sort_by?: string
+  with_genres?: string
+  'primary_release_date.gte'?: string
+  'primary_release_date.lte'?: string
+  'first_air_date.gte'?: string
+  'first_air_date.lte'?: string
+  'vote_average.gte'?: string
+  'vote_count.gte'?: string
+  with_original_language?: string
+}
+export const discoverMovies = (params: DiscoverParams) =>
+  get<ListResult<Movie>>('/discover/movie', params as Record<string, string | number>)
+export const discoverTV = (params: DiscoverParams) =>
+  get<ListResult<TVShow>>('/discover/tv', params as Record<string, string | number>)
+
+// TV seasons
+export interface Episode {
+  id: number
+  name: string
+  overview: string
+  episode_number: number
+  still_path: string | null
+  air_date: string
+  vote_average: number
+}
+export interface Season {
+  id: number
+  name: string
+  overview: string
+  season_number: number
+  episode_count: number
+  poster_path: string | null
+  air_date: string
+}
+export interface SeasonDetail extends Season {
+  episodes: Episode[]
+}
+export const getTVSeasons = (id: number) =>
+  get<TVShowDetail>(`/tv/${id}`).then(d => d as TVShowDetail & { seasons: Season[] })
+export const getTVSeason = (showId: number, seasonNumber: number) =>
+  get<SeasonDetail>(`/tv/${showId}/season/${seasonNumber}`)
+
 // Videos (trailers)
 export interface Video {
   id: string
