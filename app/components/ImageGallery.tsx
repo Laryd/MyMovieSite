@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Image from 'next/image'
-import { X, ChevronLeft, ChevronRight, Images } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react'
 import { IMG } from '@/app/lib/tmdb'
 import type { MediaImage } from '@/app/lib/tmdb'
 
@@ -24,7 +24,7 @@ export default function ImageGallery({ images, title }: Props) {
     <>
       <div className="mt-14">
         <div className="flex items-center gap-2 mb-5">
-          <Images className="w-5 h-5 text-violet-400" />
+          <LayoutGrid className="w-5 h-5 text-violet-400" />
           <h2 className="text-xl font-bold text-white">Photos</h2>
           <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded-full">
             {images.length}

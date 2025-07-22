@@ -239,9 +239,10 @@ export default async function MovieDetailPage({ params }: Props) {
         )}
 
         {/* Collection / franchise */}
-        {(movie as { belongs_to_collection?: { id: number } }).belongs_to_collection && (
+        {(movie as unknown as { belongs_to_collection?: { id: number } }).belongs_to_collection && (
+          // @ts-expect-error async server component
           <CollectionSection
-            collectionId={(movie as { belongs_to_collection: { id: number } }).belongs_to_collection.id}
+            collectionId={(movie as unknown as { belongs_to_collection: { id: number } }).belongs_to_collection.id}
             currentMovieId={movie.id}
           />
         )}
