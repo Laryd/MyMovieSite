@@ -1,6 +1,7 @@
 import HeroCarousel from './components/HeroCarousel'
 import MediaRow from './components/MediaRow'
 import Top10Row from './components/Top10Row'
+import RecentlyViewed from './components/RecentlyViewed'
 import {
   getTrending,
   getPopularMovies,
@@ -29,6 +30,7 @@ export default async function HomePage() {
       <HeroCarousel items={trending.filter(i => i.media_type !== 'person')} />
 
       <div className="space-y-12 mt-12">
+        <RecentlyViewed />
         <Top10Row title="Top 10 Movies Today" items={popular} type="movie" />
         <MediaRow title="Trending This Week" items={rest} viewAllHref="/movies" />
         <MediaRow title="Now Playing in Theaters" items={nowPlaying} type="movie" />

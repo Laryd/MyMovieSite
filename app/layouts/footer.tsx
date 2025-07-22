@@ -14,10 +14,13 @@ export default function Footer() {
           </Link>
 
           {/* Nav */}
-          <nav className="flex items-center gap-6 text-sm text-zinc-500">
+          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-zinc-500 justify-center">
             <Link href="/movies" className="hover:text-white transition-colors">Movies</Link>
             <Link href="/tv" className="hover:text-white transition-colors">TV Shows</Link>
-            <Link href="/search" className="hover:text-white transition-colors">Search</Link>
+            <Link href="/trending" className="hover:text-white transition-colors">Trending</Link>
+            <Link href="/discover" className="hover:text-white transition-colors">Discover</Link>
+            <Link href="/people" className="hover:text-white transition-colors">People</Link>
+            <Link href="/watchlist" className="hover:text-white transition-colors">Watchlist</Link>
           </nav>
 
           {/* Credit */}
