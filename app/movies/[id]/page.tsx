@@ -15,6 +15,8 @@ import MovieCard from '../../components/MovieCard'
 import TrailerModal from '../../components/TrailerModal'
 import WatchlistButton from '../../components/WatchlistButton'
 import WatchProviders from '../../components/WatchProviders'
+import CollectionSection from '../../components/CollectionSection'
+import ShareButton from '../../components/ShareButton'
 
 interface Props {
   params: { id: string }
@@ -142,6 +144,7 @@ export default async function MovieDetailPage({ params }: Props) {
             <div className="flex items-center gap-3 flex-wrap mb-6">
               <TrailerModal videoKey={trailer?.key ?? null} title={movie.title} />
               <WatchlistButton item={watchlistItem} />
+              <ShareButton title={movie.title} />
               {movie.homepage && (
                 <a
                   href={movie.homepage}
@@ -216,6 +219,14 @@ export default async function MovieDetailPage({ params }: Props) {
               })}
             </div>
           </div>
+        )}
+
+        {/* Collection / franchise */}
+        {(movie as { belongs_to_collection?: { id: number } }).belongs_to_collection && (
+          <CollectionSection
+            collectionId={(movie as { belongs_to_collection: { id: number } }).belongs_to_collection.id}
+            currentMovieId={movie.id}
+          />
         )}
 
         {/* Similar */}

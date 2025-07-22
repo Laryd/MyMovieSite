@@ -10,11 +10,14 @@ import {
   backdrop,
   poster,
   profileImg,
+  type Season,
 } from '../../lib/tmdb'
 import MovieCard from '../../components/MovieCard'
 import TrailerModal from '../../components/TrailerModal'
 import WatchlistButton from '../../components/WatchlistButton'
 import WatchProviders from '../../components/WatchProviders'
+import TVSeasons from '../../components/TVSeasons'
+import ShareButton from '../../components/ShareButton'
 
 interface Props {
   params: { id: string }
@@ -142,6 +145,7 @@ export default async function TVDetailPage({ params }: Props) {
             <div className="flex items-center gap-3 flex-wrap mb-6">
               <TrailerModal videoKey={trailer?.key ?? null} title={show.name} />
               <WatchlistButton item={watchlistItem} />
+              <ShareButton title={show.name} />
               {show.homepage && (
                 <a
                   href={show.homepage}
@@ -195,6 +199,11 @@ export default async function TVDetailPage({ params }: Props) {
               })}
             </div>
           </div>
+        )}
+
+        {/* Seasons */}
+        {(show as unknown as { seasons?: Season[] }).seasons && (
+          <TVSeasons seasons={(show as unknown as { seasons: Season[] }).seasons} />
         )}
 
         {/* Similar */}
