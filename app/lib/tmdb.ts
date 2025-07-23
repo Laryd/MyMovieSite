@@ -314,3 +314,87 @@ export const getPersonTVCredits = (id: number) =>
 // Popular people
 export const getPopularPeople = (page = 1) =>
   get<ListResult<Person & { known_for: (Movie | TVShow)[] }>>('/person/popular', { page })
+
+// Reviews
+export interface Review {
+  id: string
+  author: string
+  author_details: { username: string; rating: number | null; avatar_path: string | null }
+  content: string
+  created_at: string
+  url: string
+}
+export const getMovieReviews = (id: number) =>
+  get<ListResult<Review>>(`/movie/${id}/reviews`).then(d => d.results.slice(0, 10))
+export const getTVReviews = (id: number) =>
+  get<ListResult<Review>>(`/tv/${id}/reviews`).then(d => d.results.slice(0, 10))
+
+// Images
+export interface MediaImage {
+  file_path: string
+  width: number
+  height: number
+  vote_average: number
+}
+export const getMovieImages = (id: number) =>
+  get<{ backdrops: MediaImage[]; posters: MediaImage[] }>(`/movie/${id}/images`)
+export const getTVImages = (id: number) =>
+  get<{ backdrops: MediaImage[]; posters: MediaImage[] }>(`/tv/${id}/images`)
+
+// Keywords
+export interface Keyword { id: number; name: string }
+export const getMovieKeywords = (id: number) =>
+  get<{ keywords: Keyword[] }>(`/movie/${id}/keywords`).then(d => d.keywords)
+export const getTVKeywords = (id: number) =>
+  get<{ results: Keyword[] }>(`/tv/${id}/keywords`).then(d => d.results)
+
+// Certification (US age rating)
+export const getMovieCertification = async (id: number): Promise<string> => {
+  const data = await get<{
+    results: { iso_3166_1: string; release_dates: { certification: string; type: number }[] }[]
+  }>(`/movie/${id}/release_dates`)
+  const us = data.results.find(r => r.iso_3166_1 === 'US')
+  return us?.release_dates.find(d => d.certification)?.certification ?? ''
+}
+
+// External IDs (IMDB etc.)
+export interface ExternalIds {
+  imdb_id: string | null
+  facebook_id: string | null
+  instagram_id: string | null
+  twitter_id: string | null
+}
+export const getMovieExternalIds = (id: number) =>
+  get<ExternalIds>(`/movie/${id}/external_ids`)
+export const getTVExternalIds = (id: number) =>
+  get<ExternalIds>(`/tv/${id}/external_ids`)
+
+// Recommendations (separate from similar)
+export const getMovieRecommendations = (id: number) =>
+  get<ListResult<Movie>>(`/movie/${id}/recommendations`).then(d => d.results.slice(0, 12))
+export const getTVRecommendations = (id: number) =>
+  get<ListResult<TVShow>>(`/tv/${id}/recommendations`).then(d => d.results.slice(0, 12))
+
+// Upcoming with dates
+export const getUpcomingGrouped = async (page = 1) => {
+  const data = await get<ListResult<Movie> & { dates: { maximum: string; minimum: string } }>(
+    '/movie/upcoming', { page }
+  )
+  return data
+}
+
+// Network TV (streaming platforms)
+export const STREAMING_NETWORKS = [
+  { id: 213,  name: 'Netflix',    logo: '🔴', color: 'from-red-900/30 to-red-950' },
+  { id: 1024, name: 'Prime Video', logo: '🔵', color: 'from-blue-900/30 to-blue-950' },
+  { id: 2739, name: 'Disney+',    logo: '🎬', color: 'from-blue-800/30 to-indigo-950' },
+  { id: 49,   name: 'HBO',        logo: '⚫', color: 'from-zinc-700/30 to-zinc-950' },
+  { id: 453,  name: 'Hulu',       logo: '🟢', color: 'from-green-900/30 to-green-950' },
+  { id: 2552, name: 'Apple TV+',  logo: '⚪', color: 'from-zinc-600/20 to-zinc-950' },
+] as const
+export const getTVByNetwork = (networkId: number, page = 1) =>
+  get<ListResult<TVShow>>('/discover/tv', {
+    with_networks: networkId,
+    page,
+    sort_by: 'popularity.desc',
+  })
