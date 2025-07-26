@@ -7,6 +7,11 @@ import {
   getSimilarTV,
   getTVVideos,
   getTVWatchProviders,
+  getTVReviews,
+  getTVImages,
+  getTVKeywords,
+  getTVExternalIds,
+  getTVRecommendations,
   backdrop,
   poster,
   profileImg,
@@ -18,6 +23,9 @@ import WatchlistButton from '../../components/WatchlistButton'
 import WatchProviders from '../../components/WatchProviders'
 import TVSeasons from '../../components/TVSeasons'
 import ShareButton from '../../components/ShareButton'
+import ReviewsSection from '../../components/ReviewsSection'
+import ImageGallery from '../../components/ImageGallery'
+import Keywords from '../../components/Keywords'
 
 interface Props {
   params: { id: string }
@@ -33,12 +41,17 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function TVDetailPage({ params }: Props) {
   const id = Number(params.id)
-  const [show, credits, similar, videos, providers] = await Promise.all([
+  const [show, credits, similar, videos, providers, reviews, images, keywords, externalIds, recommendations] = await Promise.all([
     getTVById(id),
     getTVCredits(id),
     getSimilarTV(id),
     getTVVideos(id),
     getTVWatchProviders(id),
+    getTVReviews(id),
+    getTVImages(id),
+    getTVKeywords(id),
+    getTVExternalIds(id),
+    getTVRecommendations(id),
   ])
 
   const creator = credits.crew.find(c => c.job === 'Creator' || c.department === 'Creator')
@@ -173,6 +186,7 @@ export default async function TVDetailPage({ params }: Props) {
             </div>
 
             <WatchProviders providers={providers} />
+            <Keywords keywords={keywords} type="tv" />
           </div>
         </div>
 
@@ -204,6 +218,18 @@ export default async function TVDetailPage({ params }: Props) {
         {/* Seasons */}
         {(show as unknown as { seasons?: Season[] }).seasons && (
           <TVSeasons seasons={(show as unknown as { seasons: Season[] }).seasons} />
+        )}
+
+        <ImageGallery images={images.backdrops ?? []} title={show.name} />
+        <ReviewsSection reviews={reviews} />
+
+        {recommendations.length > 0 && (
+          <div className="mt-14">
+            <h2 className="text-xl font-bold text-white mb-5">Recommended For You</h2>
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+              {recommendations.map(s => <MovieCard key={s.id} item={s} type="tv" />)}
+            </div>
+          </div>
         )}
 
         {/* Similar */}

@@ -1,12 +1,18 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Star, Clock, Calendar, ChevronLeft, DollarSign, ExternalLink } from 'lucide-react'
+import { Star, Clock, Calendar, ChevronLeft, ExternalLink } from 'lucide-react'
 import {
   getMovieById,
   getMovieCredits,
   getSimilarMovies,
   getMovieVideos,
   getMovieWatchProviders,
+  getMovieReviews,
+  getMovieImages,
+  getMovieKeywords,
+  getMovieCertification,
+  getMovieExternalIds,
+  getMovieRecommendations,
   backdrop,
   poster,
   profileImg,
@@ -17,6 +23,11 @@ import WatchlistButton from '../../components/WatchlistButton'
 import WatchProviders from '../../components/WatchProviders'
 import CollectionSection from '../../components/CollectionSection'
 import ShareButton from '../../components/ShareButton'
+import ReviewsSection from '../../components/ReviewsSection'
+import ImageGallery from '../../components/ImageGallery'
+import Keywords from '../../components/Keywords'
+import CertBadge from '../../components/CertBadge'
+import StatPanel from '../../components/StatPanel'
 
 interface Props {
   params: { id: string }
@@ -32,12 +43,18 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function MovieDetailPage({ params }: Props) {
   const id = Number(params.id)
-  const [movie, credits, similar, videos, providers] = await Promise.all([
+  const [movie, credits, similar, videos, providers, reviews, images, keywords, cert, externalIds, recommendations] = await Promise.all([
     getMovieById(id),
     getMovieCredits(id),
     getSimilarMovies(id),
     getMovieVideos(id),
     getMovieWatchProviders(id),
+    getMovieReviews(id),
+    getMovieImages(id),
+    getMovieKeywords(id),
+    getMovieCertification(id),
+    getMovieExternalIds(id),
+    getMovieRecommendations(id),
   ])
 
   const director = credits.crew.find(c => c.job === 'Director')
@@ -97,7 +114,8 @@ export default async function MovieDetailPage({ params }: Props) {
 
           {/* Info */}
           <div className="flex-1 pt-2">
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              {cert && <CertBadge cert={cert} />}
               {movie.genres?.map(g => (
                 <span
                   key={g.id}
@@ -174,25 +192,24 @@ export default async function MovieDetailPage({ params }: Props) {
                   Status: <span className="text-zinc-200 font-medium">{movie.status}</span>
                 </p>
               )}
-              {movie.budget > 0 && (
-                <p className="text-zinc-500 flex items-center gap-1">
-                  Budget:{' '}
-                  <span className="text-zinc-200 font-medium flex items-center gap-0.5">
-                    <DollarSign className="w-3 h-3" />{movie.budget.toLocaleString()}
-                  </span>
-                </p>
-              )}
-              {movie.revenue > 0 && (
-                <p className="text-zinc-500 flex items-center gap-1">
-                  Revenue:{' '}
-                  <span className="text-zinc-200 font-medium flex items-center gap-0.5">
-                    <DollarSign className="w-3 h-3" />{movie.revenue.toLocaleString()}
-                  </span>
+              {externalIds.imdb_id && (
+                <p className="text-zinc-500">
+                  IMDB:{' '}
+                  <a
+                    href={`https://www.imdb.com/title/${externalIds.imdb_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-amber-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1"
+                  >
+                    {externalIds.imdb_id} <ExternalLink className="w-3 h-3" />
+                  </a>
                 </p>
               )}
             </div>
 
             <WatchProviders providers={providers} />
+            <StatPanel budget={movie.budget} revenue={movie.revenue} />
+            <Keywords keywords={keywords} type="movie" />
           </div>
         </div>
 
@@ -227,6 +244,18 @@ export default async function MovieDetailPage({ params }: Props) {
             collectionId={(movie as { belongs_to_collection: { id: number } }).belongs_to_collection.id}
             currentMovieId={movie.id}
           />
+        )}
+
+        <ImageGallery images={images.backdrops ?? []} title={movie.title} />
+        <ReviewsSection reviews={reviews} />
+
+        {recommendations.length > 0 && (
+          <div className="mt-14">
+            <h2 className="text-xl font-bold text-white mb-5">Recommended For You</h2>
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+              {recommendations.map(m => <MovieCard key={m.id} item={m} type="movie" />)}
+            </div>
+          </div>
         )}
 
         {/* Similar */}
