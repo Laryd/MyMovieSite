@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Film, Tv2, Bookmark, Menu, X, TrendingUp, Sliders, Users } from 'lucide-react'
+import { Film, Tv2, Bookmark, Menu, X, TrendingUp, Sliders, Users, CalendarDays } from 'lucide-react'
 import SearchBar from '../components/SearchBar'
 import { cn } from '@/lib/utils'
 
@@ -11,6 +11,8 @@ const navLinks = [
   { href: '/tv', label: 'TV Shows', icon: Tv2 },
   { href: '/trending', label: 'Trending', icon: TrendingUp },
   { href: '/discover', label: 'Discover', icon: Sliders },
+  { href: '/streaming', label: 'Platforms', icon: Tv2 },
+  { href: '/upcoming', label: 'Upcoming', icon: CalendarDays },
   { href: '/people', label: 'People', icon: Users },
   { href: '/watchlist', label: 'Watchlist', icon: Bookmark },
 ]
