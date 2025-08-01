@@ -19,6 +19,19 @@ export const PLANS = {
     ],
     limit: 10,
   },
+  BASIC: {
+    name: 'Basic',
+    price: 4.99,
+    priceId: process.env.STRIPE_PRICE_BASIC ?? '',
+    features: [
+      'Everything in Free',
+      'Unlimited watchlist',
+      'HD streaming links',
+      'Ad-free experience',
+      'Early access to new features',
+    ],
+    limit: Infinity,
+  },
 } as const
 
 export type PlanKey = keyof typeof PLANS
