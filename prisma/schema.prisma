@@ -88,3 +88,19 @@ model Subscription {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model WatchlistItem {
+  id          String   @id @default(cuid())
+  userId      String
+  mediaId     Int
+  mediaType   String
+  title       String
+  posterPath  String?
+  voteAverage Float?
+  year        String?
+  addedAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, mediaId, mediaType])
+}
