@@ -58,3 +58,17 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+enum Plan {
+  FREE
+  BASIC
+  PREMIUM
+}
+
+enum SubStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  INCOMPLETE
+  TRIALING
+}
