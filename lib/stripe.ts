@@ -32,6 +32,20 @@ export const PLANS = {
     ],
     limit: Infinity,
   },
+  PREMIUM: {
+    name: 'Premium',
+    price: 9.99,
+    priceId: process.env.STRIPE_PRICE_PREMIUM ?? '',
+    features: [
+      'Everything in Basic',
+      'Priority support',
+      'Exclusive curated lists',
+      'Download watchlist',
+      'Family sharing (up to 5)',
+      'Advanced recommendations',
+    ],
+    limit: Infinity,
+  },
 } as const
 
 export type PlanKey = keyof typeof PLANS
