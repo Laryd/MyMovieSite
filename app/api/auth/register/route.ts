@@ -25,6 +25,11 @@ export async function POST(req: NextRequest) {
       select: { id: true, name: true, email: true },
     })
 
+    // Create free subscription on signup
+    await prisma.subscription.create({
+      data: { userId: user.id, plan: 'FREE', status: 'ACTIVE' },
+    })
+
     return NextResponse.json({ user }, { status: 201 })
   } catch (err) {
     if (err instanceof z.ZodError) {
