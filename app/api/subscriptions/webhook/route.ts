@@ -17,5 +17,45 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 })
   }
 
-  return NextResponse.json({ received: true, type: event.type })
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object as StripeObj
+        const metadata = session.metadata as Record<string, string> | null
+        const { userId, plan } = metadata ?? {}
+        if (!userId || !plan) break
+
+        const stripeSubId = session.subscription as string
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const stripeSub = await stripe.subscriptions.retrieve(stripeSubId) as any
+
+        await prisma.subscription.upsert({
+          where: { userId },
+          create: {
+            userId,
+            plan: plan as 'FREE' | 'BASIC' | 'PREMIUM',
+            status: 'ACTIVE',
+            stripeCustomerId: session.customer as string,
+            stripeSubscriptionId: stripeSubId,
+            stripePriceId: stripeSub.items.data[0].price.id,
+            currentPeriodEnd: new Date(stripeSub.current_period_end * 1000),
+          },
+          update: {
+            plan: plan as 'FREE' | 'BASIC' | 'PREMIUM',
+            status: 'ACTIVE',
+            stripeCustomerId: session.customer as string,
+            stripeSubscriptionId: stripeSubId,
+            stripePriceId: stripeSub.items.data[0].price.id,
+            currentPeriodEnd: new Date(stripeSub.current_period_end * 1000),
+          },
+        })
+        break
+      }
+    }
+  } catch (err) {
+    console.error('Webhook error:', err)
+    return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 })
+  }
+
+  return NextResponse.json({ received: true })
 }
