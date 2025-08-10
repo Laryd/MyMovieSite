@@ -51,6 +51,54 @@ export async function POST(req: NextRequest) {
         })
         break
       }
+
+      case 'invoice.payment_succeeded': {
+        const invoice = event.data.object as StripeObj
+        const subId = invoice.subscription as string
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const stripeSub = await stripe.subscriptions.retrieve(subId) as any
+
+        await prisma.subscription.updateMany({
+          where: { stripeSubscriptionId: subId },
+          data: {
+            status: 'ACTIVE',
+            currentPeriodEnd: new Date(stripeSub.current_period_end * 1000),
+          },
+        })
+        break
+      }
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as StripeObj
+        await prisma.subscription.updateMany({
+          where: { stripeSubscriptionId: invoice.subscription as string },
+          data: { status: 'PAST_DUE' },
+        })
+        break
+      }
+
+      case 'customer.subscription.deleted': {
+        const sub = event.data.object as StripeObj
+        await prisma.subscription.updateMany({
+          where: { stripeSubscriptionId: sub.id as string },
+          data: { status: 'CANCELLED', plan: 'FREE' },
+        })
+        break
+      }
+
+      case 'customer.subscription.updated': {
+        const sub = event.data.object as StripeObj
+        const status = sub.status as string
+        await prisma.subscription.updateMany({
+          where: { stripeSubscriptionId: sub.id as string },
+          data: {
+            status: status === 'active' ? 'ACTIVE' : status === 'past_due' ? 'PAST_DUE' : 'CANCELLED',
+            cancelAtPeriodEnd: sub.cancel_at_period_end as boolean,
+            currentPeriodEnd: new Date((sub.current_period_end as number) * 1000),
+          },
+        })
+        break
+      }
     }
   } catch (err) {
     console.error('Webhook error:', err)
